@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fenbi.fbms.mapper.LessonMapper">
+	<resultMap id="BaseResultMap" type="com.fenbi.fbms.entity.Lesson">
+		<id column="id" property="id" />
+		<result column="course_id" property="courseId" />
+		<result column="teacher_id" property="teacherId" />
+		<result column="title" property="title" />
+		<result column="start_time" property="startTime" />
+		<result column="end_time" property="endTime" />
+		<result column="create_time" property="createTime" />
+		<result column="teacher_name" property="teacherName" />
+		<result column="course_title" property="courseTitle" />
+	</resultMap>
+	<insert id="insertLesson" parameterType="com.fenbi.fbms.entity.Lesson">
+		insert into fb_lesson (course_id, teacher_id, title, start_time,
+		end_time, create_time)
+		values
+		(#{courseId},#{teacherId},#{title},#{startTime},#{endTime},#{createTime})
+	</insert>
+	<select id="select" resultMap="BaseResultMap" parameterType="com.fenbi.fbms.entity.Page">
+		SELECT fln.*,ftr.name teacher_name,fce.title course_title
+		FROM fb_lesson fln
+		LEFT JOIN fb_teacher ftr ON fln.teacher_id = ftr.id
+		LEFT
+		JOIN fb_course fce ON fln.course_id = fce.id
+		<if test="name != null and name != '' ">
+			where fln.title like '%${name}%'
+		</if>
+		ORDER BY fln.id
+		LIMIT #{begin},#{size}
+	</select>
+	<select id="selectCount" resultType="java.lang.Integer"
+		parameterType="String">
+		select COUNT(*) from fb_lesson
+		<if test="title != null and title != '' ">
+			where title like "%${title}%"
+		</if>
+	</select>
+	<select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select * from fb_lesson
+		where id=#{id}
+	</select>
+	<update id="updateLesson" parameterType="com.fenbi.fbms.entity.Lesson">
+		update fb_lesson
+		<set>
+			<if test="courseId != null and courseId != '' ">
+				course_id=#{courseId},
+			</if>
+			<if test="teacherId != null and teacherId != '' ">
+				teacher_id=#{teacherId},
+			</if>
+			<if test="title != null and title != '' ">
+				title=#{title},
+			</if>
+			<if test="startTime != null">
+				start_time=#{startTime},
+			</if>
+			<if test="endTime != null">
+				end_time=#{endTime},
+			</if>
+			<if test="createTime != null">
+				create_time=#{createTime}
+			</if>
+		</set>
+		where id=#{id}
+	</update>
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from fb_lesson
+		where id=#{id}
+	</delete>
+	<select id="selectByCourseId" parameterType="int"
+		resultType="com.fenbi.fbms.entity.Lesson">
+		select le.title,le.start_time startTime,le.end_time
+		endTime,tc.name teacherName
+		from fb_lesson le,fb_teacher tc
+		where le.teacher_id=tc.id
+		and le.course_id=#{courseId}
+	</select>
+</mapper>

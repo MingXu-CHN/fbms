@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fenbi.fbms.mapper.FunctionMapper">
+	<select id="selectAllFunctions" resultType="com.fenbi.fbms.entity.Function">
+		select * from fb_function 
+	</select>
+	<select id="selectAllByRoleId" parameterType="java.lang.Integer" resultType="com.fenbi.fbms.entity.Function">
+		select f.id, f.name, f.keyword, f.url 
+		from fb_role r inner join 
+		     fb_role_function rf on r.id=rf.role_id inner join
+		     fb_function f on rf.function_id=f.id
+		where r.id=#{roleId}
+	</select>
+	<select id="selectAllByUserId" parameterType="java.lang.Integer" resultType="com.fenbi.fbms.entity.Function">
+		select DISTINCT fun.*
+		from  fb_function fun,fb_role_function rf,fb_role ro,fb_admin_role ar
+		where fun.id = rf.function_id
+		and rf.role_id = ro.id
+		and ro.id = ar.role_id
+		and ar.admin_id = #{userId}
+	</select>
+</mapper>

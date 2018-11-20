@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fenbi.fbms.mapper.CourseMapper">
+	<select id="selectCourseNames" resultType="com.fenbi.fbms.entity.Course">
+		select id, title from fb_course 
+	</select>
+	
+	<select id="selectAll" resultType="com.fenbi.fbms.entity.Course"
+		parameterType="com.fenbi.fbms.entity.Page">
+		select id, lesson_count as lessonCount, sale_num as saleNum, type_id as typeId,title,description,price,total,start_time as startTime, create_time as createTime, end_time as endTime,status from fb_course
+		<if test="title !=null">
+			where title LIKE '%${title}%'			
+		</if>
+		order by id
+		limit #{begin},#{size}
+	</select>
+	
+	<select id="selectCount" parameterType="string" resultType="int">
+		select COUNT(*) from fb_course
+
+		<if test="_parameter!=null">
+			where title LIKE "%${_parameter}%"
+		</if>
+
+	</select>
+	<!-- #{0}#{1}
+	分别为changeStatus方法中的第一个参数和第二个参数
+	 -->
+	<update id="updateStatus" parameterType="com.fenbi.fbms.entity.Course">
+	UPDATE fb_course SET 
+	status=#{status} 
+	WHERE id=#{id}
+	</update>
+	<insert id="insert" parameterType="com.fenbi.fbms.entity.Course" >
+	insert into fb_course 
+	( `type_id`,
+	 `title`,
+	 `description`,
+	 `price`,
+	 `total`,
+	 `start_time`,
+	 `end_time`,
+	 `create_time`, 
+	 `status`, 
+	 `sale_num`,
+	 `lesson_count`) 
+	 values 
+	 ( #{typeId},
+	  #{title},
+	  #{description},
+	  #{price}, 
+	  #{total},
+	  #{startTime}, 
+	  #{endTime},
+      #{createTime}, 
+      #{status},
+      #{saleNum},
+      #{lessonCount});
+	</insert>
+	<select id="selectById" parameterType="int" resultType="com.fenbi.fbms.entity.Course">
+	select id, lesson_count as lessonCount, sale_num as saleNum, type_id as typeId,title,description,price,total,start_time as startTime, create_time as createTime, end_time as endTime,status from fb_course
+	where id=#{courseId}
+	</select>
+	<update id="update" parameterType="com.fenbi.fbms.entity.Course">
+	update fb_course 
+	<set>
+		<if test="typeId!=null">
+		type_id=#{typeId},
+		</if>
+		<if test="title!=null">
+		title=#{title},
+		</if>
+		<if test="description!=null">
+		description=#{description},
+		</if>
+		<if test="price!=null">
+		price=#{price},
+		</if>
+		<if test="total!=null">
+		total=#{total},
+		</if>
+		<if test="startTime!=null">
+		start_time=#{startTime},
+		</if>
+		<if test="endTime!=null">
+		end_time=#{endTime}
+		</if>
+	</set>
+	where id=#{id}
+	</update>
+</mapper>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fenbi.fbms.mapper.RoleMapper">
+	<resultMap id="BaseResultMap" type="com.fenbi.fbms.entity.Role" >
+    		<id column="id" property="id" />
+	    <result column="name" property="name" />
+	    <result column="create_time" property="createTime" />
+	  </resultMap>
+	<insert id="insertRole" parameterType="com.fenbi.fbms.entity.Role" >
+		<selectKey keyProperty="id" resultType="java.lang.Integer" order="AFTER">
+	  		<!-- 主键返回 -->
+	  		select last_insert_id()
+	  	</selectKey>
+	  	insert into fb_role 
+	  	values (#{id},#{name},#{createTime})
+	</insert>
+	<select id="selectRoleList" parameterType="com.fenbi.fbms.entity.Page" resultMap="BaseResultMap">
+		select * from fb_role
+		<if test="name != null and name != '' ">
+			where name like '%${name}%'
+		</if>
+		order by id
+		limit #{begin},#{size}
+	</select>
+	<select id="selectRoleById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+		select * from fb_role where id=#{id}
+	</select>
+	<delete id="deleteRoleById" parameterType="java.lang.Integer">
+		delete from fb_role where id=#{id}
+	</delete>
+	<delete id="deleteRoleFunctionsByRoleId" parameterType="java.lang.Integer">
+		delete from fb_role_function where role_id=#{id}
+	</delete>
+	<select id="selectCount" parameterType="string" resultType="java.lang.Integer">
+		select COUNT(*) from fb_role
+		<if test="_parameter != null and _parameter != ''">
+			where name like "%${_parameter}%"
+		</if>
+	</select>
+	<select id="selectRoles" resultMap="BaseResultMap">
+		select * from fb_role 
+	</select>
+	<select id="selectAdminCountByRoleId" resultType="java.lang.Integer">
+		select count(admin_id) from fb_admin_role where role_id=#{roleId}
+	</select>
+	<update id="update" parameterType="com.fenbi.fbms.entity.Role">
+		update fb_role
+		set name=#{name}
+		where id=#{id}
+	</update>
+</mapper>

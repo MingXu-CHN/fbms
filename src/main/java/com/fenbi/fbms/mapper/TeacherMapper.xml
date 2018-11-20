@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fenbi.fbms.mapper.TeacherMapper">
+
+	<select id="selectAll" resultType="com.fenbi.fbms.entity.Teacher"
+		parameterType="com.fenbi.fbms.entity.Page">
+		select * from fb_teacher
+		<if test="name !=null">
+			where name LIKE '%${name}%'
+		</if>
+		order by id
+		limit #{begin},#{size}
+
+
+	</select>
+
+	<select id="selectCount" parameterType="string" resultType="int">
+		select COUNT(*) from fb_teacher
+
+		<if test="_parameter!=null">
+			where name LIKE "%${_parameter}%"
+		</if>
+
+	</select>
+
+	<insert id="insert" parameterType="com.fenbi.fbms.entity.Teacher">
+		INSERT INTO
+		fb_teacher
+		(`name`,
+		`gender`,
+		`email`,
+		`username`,
+		`status`,
+		`photo_url`,
+		`description`,
+		`create_time`)
+		VALUES (#{name},
+		#{gender},
+		#{email},
+		#{username},
+		#{status},
+		#{photoUrl},
+		#{description},
+		#{createTime})
+
+	</insert>
+	<resultMap id="teacherMap" type="com.fenbi.fbms.entity.Teacher">
+
+		<id column="id" property="id" />
+		<id column="name" property="name" />
+		<id column="gender" property="gender" />
+		<id column="email" property="email" />
+		<id column="username" property="username" />
+		<id column="status" property="status" />
+		<id column="photo_url" property="photoUrl" />
+		<id column="description" property="description" />
+		<id column="score" property="score" />
+		<id column="create_time" property="createTime" />
+
+	</resultMap>
+	<select id="selectById" parameterType="int" resultMap="teacherMap">
+		SELECT * FROM fb_teacher WHERE id = #{id}
+
+	</select>
+
+	<update id="update" parameterType="com.fenbi.fbms.entity.Teacher">
+		UPDATE fb_teacher
+		<set>
+			<if test="name!=null">
+				name=#{name},
+			</if>
+			<if test="gender !=null">
+				gender=#{gender},
+			</if>
+			<if test="email !=null">
+				email=#{email},
+			</if>
+			<if test="username!=null">
+				username=#{username},
+			</if>
+			<if test="status!=null">
+				status=#{status},
+			</if>
+			<if test="photoUrl!=null">
+				photo_url=#{photoUrl},
+			</if>
+			<if test="description!=null">
+				description=#{description}
+			</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+	<!-- #{0}#{1} 分别为updateStatus方法中的第一个参数和第二个参数 -->
+	<update id="updateStatus">
+		UPDATE fb_teacher SET
+		status=#{arg1}
+		WHERE id=#{arg0}
+	</update>
+	<select id="selectTeacherNames" resultType="com.fenbi.fbms.entity.Teacher">
+		select id, name from fb_teacher
+		where status=1
+	</select>
+
+</mapper>

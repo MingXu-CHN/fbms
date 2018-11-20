@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fenbi.fbms.mapper.AdminMapper">
+	<select id="selectByUserName" resultType="com.fenbi.fbms.entity.Admin" parameterType="String">
+		select * from fb_admin 
+		where username=#{username}
+	</select>
+	<select id="selectAll" resultType="com.fenbi.fbms.entity.Admin" parameterType="com.fenbi.fbms.entity.Page">
+		select * from fb_admin
+		<if test="name != null and name != '' ">
+			where name like '%${name}%'
+		</if>
+		order by id
+		limit #{begin},#{size}
+	</select>
+	<select id="selectCount" resultType="java.lang.Integer" parameterType="String">
+		select COUNT(*) from fb_admin
+		<if test="_parameter != null and _parameter != '' ">
+			where name like "%${_parameter}%"
+		</if>
+	</select>
+	<select id="selectById" resultType="com.fenbi.fbms.entity.Admin" parameterType="java.lang.Integer">
+		select * from fb_admin 
+		where id=#{id}
+	</select>
+	<insert id="insert"  parameterType="com.fenbi.fbms.entity.Admin">
+		insert into fb_admin (id, username, password, name, email, status, create_time) 
+		values (#{id}, #{username}, #{password}, #{name}, #{email}, #{status}, #{createTime})
+	</insert>
+	<update id="update"  parameterType="com.fenbi.fbms.entity.Admin">
+		update fb_admin 
+		<set >
+	      <if test="username != null" >
+	        username = #{username},
+	      </if>
+	      <if test="name != null" >
+	        name = #{name},
+	      </if>
+	      <if test="email != null" >
+	        email = #{email},
+	      </if>
+	      <if test="status != null" >
+	        status = #{status},
+	      </if>
+	    </set>
+		where id=#{id}
+	</update>
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from fb_admin 
+		where id=#{adminId}
+	</delete>
+	<delete id="deleteAdminRoles" parameterType="java.lang.Integer">
+		delete from fb_admin_role 
+		where admin_id=#{adminId}
+	</delete>
+	<insert id="insertAdminRoles" >
+		insert into fb_admin_role (admin_id, role_id) 
+		values (#{adminId}, #{roleId})
+	</insert>
+	<select id="selectAdminRoles" resultType="com.fenbi.fbms.entity.Role" parameterType="java.lang.Integer">
+		select r.id, r.name 
+		from fb_role r inner join
+		     fb_admin_role ar on r.id=ar.role_id
+		where ar.admin_id=#{adminId}
+	</select>
+	<select id="checkUsername" resultType="java.lang.Integer" parameterType="String">
+		select COUNT(*) from fb_admin
+		<if test="username != null and username != '' ">
+			where username=#{username}
+		</if>
+	</select>
+
+</mapper>
